@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hydro-Vacuum Energy System — Complete Design</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050d1a;
+    --panel: #0a1628;
+    --border: #0e3a6e;
+    --accent: #00d4ff;
+    --accent2: #00ff9d;
+    --accent3: #ff6b35;
+    --accent4: #ffd700;
+    --text: #c8e6ff;
+    --text-dim: #5a8ab0;
+    --glow: 0 0 20px rgba(0,212,255,0.4);
+    --glow2: 0 0 20px rgba(0,255,157,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 4s linear infinite;
+    z-index: 1;
+    opacity: 0.4;
+  }
+
+  @keyframes scan {
+    0% { top: 0; }
+    100% { top: 100vh; }
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 50px 20px 30px;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 4px 14px;
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 5vw, 48px);
+    font-weight: 900;
+    line-height: 1.1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+    text-shadow: none;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* SECTION */
+  .section {
+    margin: 30px 0;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.4s; }
+  .section:nth-child(5) { animation-delay: 0.5s; }
+  .section:nth-child(6) { animation-delay: 0.6s; }
+  .section:nth-child(7) { animation-delay: 0.7s; }
+  .section:nth-child(8) { animation-delay: 0.8s; }
+  .section:nth-child(9) { animation-delay: 0.9s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--accent);
+    padding: 3px 8px;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+
+  .section-icon {
+    margin-left: auto;
+    font-size: 20px;
+  }
+
+  /* PANEL */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+  }
+
+  .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  .spec-card {
+    background: rgba(0,212,255,0.03);
+    border: 1px solid rgba(0,212,255,0.15);
+    padding: 14px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+
+  .spec-card:hover {
+    border-color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    transform: translateY(-2px);
+    box-shadow: var(--glow);
+  }
+
+  .spec-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+
+  .spec-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+
+  .spec-unit {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'Share Tech Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* DIAGRAM */
+  .diagram-container {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 30px 20px;
+    overflow-x: auto;
+    position: relative;
+  }
+
+  svg text {
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  /* FLOW PATH ANIMATION */
+  @keyframes flowRight {
+    0% { stroke-dashoffset: 20; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  @keyframes flowUp {
+    0% { stroke-dashoffset: 20; }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .flow-line {
+    stroke-dasharray: 6 4;
+    animation: flowRight 0.8s linear infinite;
+  }
+
+  .flow-up {
+    stroke-dasharray: 6 4;
+    animation: flowUp 0.8s linear infinite;
+  }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+  }
+
+  .data-table th {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    text-align: left;
+    color: var(--accent);
+    letter-spacing: 1px;
+    font-size: 11px;
+  }
+
+  .data-table td {
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    color: var(--text);
+    transition: background 0.2s;
+  }
+
+  .data-table tr:hover td {
+    background: rgba(0,212,255,0.05);
+  }
+
+  .data-table .val {
+    color: var(--accent2);
+    font-weight: bold;
+  }
+
+  /* STEPS */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px;
+    background: rgba(0,212,255,0.02);
+    border: 1px solid var(--border);
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .step:hover {
+    border-color: var(--accent2);
+    background: rgba(0,255,157,0.04);
+    box-shadow: var(--glow2);
+  }
+
+  .step-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--accent);
+    min-width: 32px;
+    opacity: 0.6;
+  }
+
+  .step-content h4 {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    color: var(--accent2);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  .step-content p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .step-content code {
+    background: rgba(0,212,255,0.1);
+    color: var(--accent);
+    padding: 1px 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* CIRCUIT DIAGRAM */
+  .circuit-label {
+    font-size: 10px;
+    fill: #5a8ab0;
+  }
+
+  .circuit-value {
+    font-size: 11px;
+    fill: #00ff9d;
+    font-weight: bold;
+  }
+
+  /* ALERTS */
+  .alert {
+    padding: 14px 18px;
+    border-left: 3px solid;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .alert-warning {
+    border-color: var(--accent3);
+    background: rgba(255,107,53,0.06);
+    color: #ffb89a;
+  }
+
+  .alert-tip {
+    border-color: var(--accent2);
+    background: rgba(0,255,157,0.06);
+    color: #a0ffd8;
+  }
+
+  .alert-info {
+    border-color: var(--accent4);
+    background: rgba(255,215,0,0.06);
+    color: #ffe57a;
+  }
+
+  .alert strong {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  /* UPGRADE PATH */
+  .upgrade-path {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .upgrade-stage {
+    flex: 1;
+    min-width: 140px;
+    padding: 16px 12px;
+    background: rgba(0,212,255,0.03);
+    border: 1px solid var(--border);
+    border-right: none;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .upgrade-stage:last-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .upgrade-stage:hover {
+    background: rgba(0,212,255,0.08);
+  }
+
+  .upgrade-stage::after {
+    content: '→';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 16px;
+    z-index: 3;
+    background: var(--bg);
+    padding: 0 2px;
+  }
+
+  .upgrade-stage:last-child::after { display: none; }
+
+  .stage-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+  }
+
+  .stage-name {
+    font-size: 12px;
+    color: var(--accent2);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .stage-output {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent4);
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  /* COMPONENT DIAGRAM (SVG based) */
+  .water-flow {
+    stroke: #00aaff;
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 8 4;
+    animation: flowRight 1s linear infinite;
+  }
+
+  .elec-flow {
+    stroke: #ffd700;
+    stroke-width: 1.5;
+    fill: none;
+    stroke-dasharray: 5 3;
+    animation: flowRight 0.6s linear infinite;
+  }
+
+  /* NAV dots */
+  .nav-dots {
+    position: fixed;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+  }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  @media (max-width: 600px) {
+    .nav-dots { display: none; }
+    .upgrade-path { flex-direction: column; }
+    .upgrade-stage { border-right: 1px solid var(--border); border-bottom: none; }
+    .upgrade-stage:last-child { border-bottom: 1px solid var(--border); }
+    .upgrade-stage::after { content: '↓'; right: 50%; bottom: -12px; top: auto; transform: translateX(50%); }
+  }
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<div class="nav-dots">
+  <div class="nav-dot active" onclick="scrollToSection(0)" title="Overview"></div>
+  <div class="nav-dot" onclick="scrollToSection(1)" title="Mechanical"></div>
+  <div class="nav-dot" onclick="scrollToSection(2)" title="Vacuum Column"></div>
+  <div class="nav-dot" onclick="scrollToSection(3)" title="Venturi"></div>
+  <div class="nav-dot" onclick="scrollToSection(4)" title="Turbine"></div>
+  <div class="nav-dot" onclick="scrollToSection(5)" title="Electrical"></div>
+  <div class="nav-dot" onclick="scrollToSection(6)" title="Assembly"></div>
+  <div class="nav-dot" onclick="scrollToSection(7)" title="Performance"></div>
+  <div class="nav-dot" onclick="scrollToSection(8)" title="Upgrades"></div>
+</div>
+
+<header>
+  <div class="badge">PROTOTYPE DESIGN v1.0</div>
+  <h1>HYDRO-VACUUM<br>ENERGY SYSTEM</h1>
+  <p class="subtitle">TABLETOP · PVC + GLASS · MULTI-STAGE SIPHON + VENTURI + PELTON</p>
+</header>
+
+<div class="container">
+
+  <!-- SECTION 0: SYSTEM OVERVIEW DIAGRAM -->
+  <div class="section" id="sec0">
+    <div class="section-header">
+      <span class="section-num">00</span>
+      <span class="section-title">COMPLETE SYSTEM DIAGRAM</span>
+      <span class="section-icon">🔵</span>
+    </div>
+    <div class="diagram-container">
+      <svg viewBox="0 0 900 520" width="100%" style="min-width:600px">
+        <defs>
+          <marker id="arrowB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#00aaff"/>
+          </marker>
+          <marker id="arrowY" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ffd700"/>
+          </marker>
+          <marker id="arrowG" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#00ff9d"/>
+          </marker>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- TOP TANK -->
+        <rect x="350" y="20" width="120" height="50" rx="3" fill="#0a1e3d" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="410" y="42" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">TOP TANK</text>
+        <text x="410" y="58" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">1.5L · 80cm high</text>
+
+        <!-- SIPHON PIPES (4x) -->
+        <text x="80" y="55" fill="#00ff9d" font-size="10" font-family="'Share Tech Mono'">SIPHONS ×4</text>
+        <line x1="120" y1="70" x2="350" y2="70" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowB)"/>
+        <line x1="120" y1="85" x2="350" y2="85" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowB)"/>
+        <line x1="120" y1="100" x2="350" y2="100" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowB)"/>
+        <line x1="120" y1="115" x2="350" y2="115" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrowB)"/>
+        <text x="220" y="64" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">1cm dia · peak 60cm</text>
+
+        <!-- VACUUM COLUMN (5 sections) -->
+        <rect x="165" y="150" width="60" height="290" rx="3" fill="#081420" stroke="#0e3a6e" stroke-width="1.5"/>
+        <!-- Section dividers -->
+        <line x1="165" y1="208" x2="225" y2="208" stroke="#0e3a6e" stroke-width="1"/>
+        <line x1="165" y1="266" x2="225" y2="266" stroke="#0e3a6e" stroke-width="1"/>
+        <line x1="165" y1="324" x2="225" y2="324" stroke="#0e3a6e" stroke-width="1"/>
+        <line x1="165" y1="382" x2="225" y2="382" stroke="#0e3a6e" stroke-width="1"/>
+        <!-- Section labels -->
+        <text x="195" y="183" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">S5</text>
+        <text x="195" y="241" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">S4</text>
+        <text x="195" y="299" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">S3</text>
+        <text x="195" y="357" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">S2</text>
+        <text x="195" y="415" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">S1</text>
+        <text x="195" y="155" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">VACUUM COL.</text>
+        <!-- Water flow up arrow -->
+        <text x="195" y="470" text-anchor="middle" fill="#00aaff" font-size="18">↑</text>
+
+        <!-- CONNECTING CHANNEL -->
+        <rect x="235" y="150" width="14" height="290" rx="2" fill="#081420" stroke="#ff6b35" stroke-width="1"/>
+        <text x="242" y="295" text-anchor="middle" fill="#ff6b35" font-size="8" font-family="'Share Tech Mono'" transform="rotate(-90,242,295)">CONNECT CHANNEL</text>
+        <!-- Tap connections -->
+        <line x1="235" y1="179" x2="225" y2="179" stroke="#ff6b35" stroke-width="1"/>
+        <line x1="235" y1="237" x2="225" y2="237" stroke="#ff6b35" stroke-width="1"/>
+        <line x1="235" y1="295" x2="225" y2="295" stroke="#ff6b35" stroke-width="1"/>
+        <line x1="235" y1="353" x2="225" y2="353" stroke="#ff6b35" stroke-width="1"/>
+        <line x1="235" y1="411" x2="225" y2="411" stroke="#ff6b35" stroke-width="1"/>
+
+        <!-- MANIFOLD -->
+        <rect x="120" y="450" width="60" height="30" rx="3" fill="#0a1e3d" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="150" y="463" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">MANIFOLD</text>
+        <text x="150" y="475" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">4→1 combiner</text>
+        <line x1="180" y1="465" x2="270" y2="465" stroke="#00aaff" stroke-width="2" marker-end="url(#arrowB)"/>
+
+        <!-- VENTURI -->
+        <polygon points="270,450 340,458 340,472 270,480" fill="#0a1e3d" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="305" y="462" text-anchor="middle" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">VENTURI</text>
+        <text x="305" y="474" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">3cm→1cm</text>
+        <line x1="340" y1="465" x2="390" y2="465" stroke="#ffd700" stroke-width="2" marker-end="url(#arrowY)"/>
+
+        <!-- PELTON TURBINE -->
+        <circle cx="420" cy="465" r="28" fill="#081420" stroke="#00ff9d" stroke-width="2"/>
+        <text x="420" y="461" text-anchor="middle" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">PELTON</text>
+        <text x="420" y="474" text-anchor="middle" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">TURBINE</text>
+        <!-- Rotation marks -->
+        <circle cx="420" cy="465" r="18" fill="none" stroke="#00ff9d" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="420" y="445" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">8cm dia · 12 cups</text>
+
+        <!-- GENERATOR (DC Motor) -->
+        <rect x="470" y="448" width="60" height="34" rx="3" fill="#0a1e3d" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="500" y="463" text-anchor="middle" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">DC MOTOR</text>
+        <text x="500" y="475" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">(GENERATOR)</text>
+        <line x1="448" y1="462" x2="470" y2="462" stroke="#ffd700" stroke-width="2" stroke-dasharray="4,3"/>
+
+        <!-- ELECTRICAL PATH -->
+        <line x1="530" y1="462" x2="580" y2="462" stroke="#ffd700" stroke-width="1.5" marker-end="url(#arrowY)"/>
+        <rect x="580" y="445" width="70" height="34" rx="3" fill="#0a1e3d" stroke="#ffd700" stroke-width="1.5"/>
+        <text x="615" y="460" text-anchor="middle" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">CAPACITOR</text>
+        <text x="615" y="472" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">buffer</text>
+        <line x1="650" y1="462" x2="700" y2="462" stroke="#ffd700" stroke-width="1.5" marker-end="url(#arrowY)"/>
+
+        <!-- MOTOR 2 -->
+        <rect x="700" y="445" width="60" height="34" rx="3" fill="#0a1e3d" stroke="#00ff9d" stroke-width="1.5"/>
+        <text x="730" y="460" text-anchor="middle" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">MOTOR 2</text>
+        <text x="730" y="472" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">drives fan</text>
+
+        <!-- FAN -->
+        <circle cx="820" cy="462" r="24" fill="#081420" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="820" y="459" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">FAN /</text>
+        <text x="820" y="471" text-anchor="middle" fill="#00d4ff" font-size="9" font-family="'Share Tech Mono'">LOAD</text>
+        <line x1="760" y1="462" x2="796" y2="462" stroke="#00ff9d" stroke-width="1.5" marker-end="url(#arrowG)"/>
+
+        <!-- SOLAR -->
+        <rect x="700" y="380" width="60" height="34" rx="3" fill="#0a1e3d" stroke="#ff6b35" stroke-width="1.5"/>
+        <text x="730" y="395" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">SOLAR</text>
+        <text x="730" y="407" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">5V panel</text>
+        <line x1="730" y1="414" x2="730" y2="445" stroke="#ff6b35" stroke-width="1.5" marker-end="url(#arrowG)"/>
+
+        <!-- PUMP (return) -->
+        <rect x="350" y="380" width="70" height="34" rx="3" fill="#0a1e3d" stroke="#00aaff" stroke-width="1.5"/>
+        <text x="385" y="396" text-anchor="middle" fill="#00aaff" font-size="9" font-family="'Share Tech Mono'">RETURN</text>
+        <text x="385" y="408" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">PUMP</text>
+        <!-- Pump to top tank -->
+        <line x1="385" y1="380" x2="385" y2="90" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowB)"/>
+        <line x1="385" y1="90" x2="350" y2="70" stroke="#00aaff" stroke-width="1.5"/>
+        <!-- Power to pump -->
+        <line x1="700" y1="462" x2="650" y2="462" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+        <line x1="650" y1="462" x2="650" y2="397" stroke="#ffd700" stroke-width="1" opacity="0.4"/>
+        <line x1="650" y1="397" x2="420" y2="397" stroke="#ffd700" stroke-width="1" opacity="0.4" marker-end="url(#arrowY)"/>
+
+        <!-- BOTTOM TANK -->
+        <rect x="80" y="455" width="80" height="50" rx="3" fill="#0a1e3d" stroke="#00d4ff" stroke-width="1.5"/>
+        <text x="120" y="476" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">BOTTOM</text>
+        <text x="120" y="490" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">TANK</text>
+        <text x="120" y="502" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">3L · ground level</text>
+        <!-- Bottom to siphons -->
+        <line x1="120" y1="455" x2="120" y2="120" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+        <!-- LEGEND -->
+        <rect x="580" y="380" width="110" height="55" rx="2" fill="#060e1c" stroke="#0e3a6e" stroke-width="1"/>
+        <text x="590" y="394" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">LEGEND</text>
+        <line x1="590" y1="403" x2="610" y2="403" stroke="#00aaff" stroke-width="2" stroke-dasharray="6,3"/>
+        <text x="615" y="407" fill="#00aaff" font-size="8" font-family="'Share Tech Mono'">water flow</text>
+        <line x1="590" y1="416" x2="610" y2="416" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="615" y="420" fill="#ffd700" font-size="8" font-family="'Share Tech Mono'">electrical</text>
+        <line x1="590" y1="429" x2="610" y2="429" stroke="#ff6b35" stroke-width="1.5"/>
+        <text x="615" y="433" fill="#ff6b35" font-size="8" font-family="'Share Tech Mono'">connect ch.</text>
+
+        <!-- Title -->
+        <text x="450" y="25" text-anchor="middle" fill="#00d4ff" font-size="13" font-family="'Orbitron'" font-weight="700">COMPLETE SYSTEM FLOW</text>
+        <text x="450" y="40" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">TABLETOP SCALE · 80cm HEIGHT · 5-SECTION VACUUM COLUMN</text>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SECTION 1: MECHANICAL SPECS -->
+  <div class="section" id="sec1">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">MECHANICAL SPECIFICATIONS</span>
+      <span class="section-icon">⚙️</span>
+    </div>
+    <div class="panel">
+      <div class="panel-grid">
+        <div class="spec-card">
+          <div class="spec-label">Total Height</div>
+          <div class="spec-value">80<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">tabletop feasible</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Total Width</div>
+          <div class="spec-value">30<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">compact footprint</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Sections</div>
+          <div class="spec-value">5</div>
+          <div class="spec-unit">vacuum stages</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Siphons</div>
+          <div class="spec-value">4</div>
+          <div class="spec-unit">parallel flow</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Main Column</div>
+          <div class="spec-value">3<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">PVC diameter</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Siphon Pipes</div>
+          <div class="spec-value">1<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">each, PVC</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Peak Height</div>
+          <div class="spec-value">60<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">safe below 76cm limit</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Connect Channel</div>
+          <div class="spec-value">0.8<span style="font-size:12px">cm</span></div>
+          <div class="spec-unit">PVC alongside column</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: VACUUM COLUMN DETAIL -->
+  <div class="section" id="sec2">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">5-STAGE VACUUM COLUMN + CONNECTING CHANNEL</span>
+      <span class="section-icon">🔩</span>
+    </div>
+    <div class="panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;flex-wrap:wrap">
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">PER SECTION SPECS</th></tr>
+            <tr><td>Material</td><td class="val">3cm PVC pipe</td></tr>
+            <tr><td>Height each</td><td class="val">12 cm</td></tr>
+            <tr><td>Gap between</td><td class="val">2 cm</td></tr>
+            <tr><td>Total column</td><td class="val">70 cm</td></tr>
+            <tr><td>Check valve</td><td class="val">Rubber flap (DIY)</td></tr>
+            <tr><td>Seal method</td><td class="val">Silicone sealant</td></tr>
+          </table>
+        </div>
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">CONNECTING CHANNEL</th></tr>
+            <tr><td>Material</td><td class="val">0.8cm PVC tube</td></tr>
+            <tr><td>Length</td><td class="val">70 cm (full column)</td></tr>
+            <tr><td>Tap points</td><td class="val">5 (midpoint each section)</td></tr>
+            <tr><td>Direction</td><td class="val">Bidirectional</td></tr>
+            <tr><td>Function</td><td class="val">Pressure equalizer</td></tr>
+            <tr><td>Valve per tap</td><td class="val">Rubber flap check</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="alert alert-tip" style="margin-top:16px">
+        <strong>💡 YOUR ORIGINAL IDEA</strong>
+        The connecting channel acts as a distributed pressure spine — if any section loses vacuum, neighboring sections feed pressure back in, keeping the whole column stable. This is what makes your multi-section idea genuinely clever.
+      </div>
+      <div class="alert alert-warning" style="margin-top:8px">
+        <strong>⚠️ CRITICAL SEAL POINT</strong>
+        Every junction between section and connecting channel tap MUST be sealed with silicone. This is the #1 failure point. A single air gap collapses the vacuum in that section.
+      </div>
+
+      <!-- Section diagram -->
+      <div style="margin-top:20px;overflow-x:auto">
+        <svg viewBox="0 0 700 200" width="100%" style="min-width:500px">
+          <!-- Main column sections -->
+          <rect x="60" y="20" width="80" height="160" rx="3" fill="#060e1c" stroke="#0e3a6e" stroke-width="1.5"/>
+          <!-- Section dividers with labels -->
+          <line x1="60" y1="52" x2="140" y2="52" stroke="#0e3a6e" stroke-width="1"/>
+          <line x1="60" y1="84" x2="140" y2="84" stroke="#0e3a6e" stroke-width="1"/>
+          <line x1="60" y1="116" x2="140" y2="116" stroke="#0e3a6e" stroke-width="1"/>
+          <line x1="60" y1="148" x2="140" y2="148" stroke="#0e3a6e" stroke-width="1"/>
+          <text x="100" y="40" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">S5 · 12cm</text>
+          <text x="100" y="72" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">S4 · 12cm</text>
+          <text x="100" y="104" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">S3 · 12cm</text>
+          <text x="100" y="136" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">S2 · 12cm</text>
+          <text x="100" y="168" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">S1 · 12cm</text>
+          <!-- Water level indicators -->
+          <rect x="62" y="30" width="76" height="20" fill="rgba(0,100,200,0.3)" rx="1"/>
+          <rect x="62" y="62" width="76" height="20" fill="rgba(0,100,200,0.3)" rx="1"/>
+          <rect x="62" y="94" width="76" height="20" fill="rgba(0,100,200,0.3)" rx="1"/>
+          <rect x="62" y="126" width="76" height="20" fill="rgba(0,100,200,0.3)" rx="1"/>
+          <rect x="62" y="158" width="76" height="20" fill="rgba(0,100,200,0.3)" rx="1"/>
+          <!-- CHECK VALVES -->
+          <text x="30" y="40" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">↑ valve</text>
+          <text x="30" y="72" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">↑ valve</text>
+          <text x="30" y="104" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">↑ valve</text>
+          <text x="30" y="136" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">↑ valve</text>
+          <text x="30" y="168" text-anchor="middle" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">↑ valve</text>
+          <!-- Connecting channel -->
+          <rect x="148" y="20" width="20" height="160" rx="2" fill="#060e1c" stroke="#ff6b35" stroke-width="1.5"/>
+          <text x="158" y="100" text-anchor="middle" fill="#ff6b35" font-size="8" font-family="'Share Tech Mono'" transform="rotate(-90,158,100)">CONN. CHANNEL · 0.8cm</text>
+          <!-- Taps -->
+          <line x1="140" y1="36" x2="148" y2="36" stroke="#ff6b35" stroke-width="1.5"/>
+          <line x1="140" y1="68" x2="148" y2="68" stroke="#ff6b35" stroke-width="1.5"/>
+          <line x1="140" y1="100" x2="148" y2="100" stroke="#ff6b35" stroke-width="1.5"/>
+          <line x1="140" y1="132" x2="148" y2="132" stroke="#ff6b35" stroke-width="1.5"/>
+          <line x1="140" y1="164" x2="148" y2="164" stroke="#ff6b35" stroke-width="1.5"/>
+
+          <!-- DIMENSION ANNOTATIONS -->
+          <line x1="220" y1="20" x2="220" y2="52" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="215" y1="20" x2="225" y2="20" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="215" y1="52" x2="225" y2="52" stroke="#5a8ab0" stroke-width="1"/>
+          <text x="240" y="38" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">12cm</text>
+          <line x1="220" y1="52" x2="220" y2="84" stroke="#5a8ab0" stroke-width="1" stroke-dasharray="3,2"/>
+          <text x="240" y="70" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">2cm gap</text>
+
+          <!-- Labels on right -->
+          <text x="310" y="30" fill="#00ff9d" font-size="11" font-family="'Share Tech Mono'">VACUUM COLUMN DETAIL</text>
+          <text x="310" y="50" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• 5 sections × 12cm each</text>
+          <text x="310" y="66" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Check valve at each section bottom</text>
+          <text x="310" y="82" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Rubber flap valves (cut from glove)</text>
+          <text x="310" y="98" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Connecting channel taps at midpoint</text>
+          <text x="310" y="114" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Silicone seal ALL joints</text>
+          <text x="310" y="130" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Water rises section by section</text>
+          <text x="310" y="146" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">• Each section stores potential energy</text>
+          <text x="310" y="162" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">→ Channel equalizes pressure across all</text>
+          <text x="310" y="178" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">→ One failure = others compensate</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: VENTURI -->
+  <div class="section" id="sec3">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">VENTURI NOZZLE — GLASS TUBE</span>
+      <span class="section-icon">🔬</span>
+    </div>
+    <div class="panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">VENTURI DIMENSIONS</th></tr>
+            <tr><td>Material</td><td class="val">Glass tube</td></tr>
+            <tr><td>Inlet diameter</td><td class="val">3 cm</td></tr>
+            <tr><td>Throat diameter</td><td class="val">1 cm</td></tr>
+            <tr><td>Throat length</td><td class="val">2 cm</td></tr>
+            <tr><td>Outlet diameter</td><td class="val">3 cm</td></tr>
+            <tr><td>Convergence angle</td><td class="val">21°</td></tr>
+            <tr><td>Divergence angle</td><td class="val">7° (critical!)</td></tr>
+            <tr><td>Total length</td><td class="val">~14 cm</td></tr>
+          </table>
+        </div>
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">VENTURI PHYSICS</th></tr>
+            <tr><td>Inlet velocity</td><td class="val">~0.2 m/s</td></tr>
+            <tr><td>Throat velocity</td><td class="val">~1.8 m/s</td></tr>
+            <tr><td>Velocity ratio</td><td class="val">9× increase</td></tr>
+            <tr><td>Pressure drop</td><td class="val">~160 Pa</td></tr>
+            <tr><td>Formula</td><td class="val">ΔP = ½ρΔV²</td></tr>
+            <tr><td>4 siphons boost</td><td class="val">4× flow = 16× ΔP</td></tr>
+            <tr><td>Seal into PVC</td><td class="val">Rubber grommets</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Venturi cross section diagram -->
+      <div style="margin-top:20px;overflow-x:auto">
+        <svg viewBox="0 0 600 120" width="100%" style="min-width:400px">
+          <!-- Venturi shape top -->
+          <path d="M 40,25 L 200,45 L 260,45 L 420,25" fill="none" stroke="#ffd700" stroke-width="2"/>
+          <!-- Venturi shape bottom -->
+          <path d="M 40,85 L 200,65 L 260,65 L 420,85" fill="none" stroke="#ffd700" stroke-width="2"/>
+          <!-- Fill -->
+          <path d="M 40,25 L 200,45 L 260,45 L 420,25 L 420,85 L 260,65 L 200,65 L 40,85 Z" fill="rgba(0,212,255,0.06)"/>
+          <!-- Flow arrows -->
+          <line x1="50" y1="55" x2="100" y2="55" stroke="#00aaff" stroke-width="2" marker-end="url(#arrowB)" stroke-dasharray="6,3"/>
+          <line x1="130" y1="55" x2="170" y2="55" stroke="#00aaff" stroke-width="2" marker-end="url(#arrowB)" stroke-dasharray="6,3"/>
+          <line x1="220" y1="55" x2="240" y2="55" stroke="#ffd700" stroke-width="3" marker-end="url(#arrowY)"/>
+          <line x1="300" y1="55" x2="360" y2="55" stroke="#00aaff" stroke-width="2" marker-end="url(#arrowB)" stroke-dasharray="6,3"/>
+          <!-- Dimension lines -->
+          <line x1="40" y1="100" x2="40" y2="108" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="200" y1="100" x2="200" y2="108" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="260" y1="100" x2="260" y2="108" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="420" y1="100" x2="420" y2="108" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="40" y1="104" x2="200" y2="104" stroke="#5a8ab0" stroke-width="1"/>
+          <line x1="260" y1="104" x2="420" y2="104" stroke="#5a8ab0" stroke-width="1"/>
+          <text x="120" y="116" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">convergence 21°</text>
+          <text x="340" y="116" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">divergence 7°</text>
+          <!-- Labels -->
+          <text x="40" y="18" fill="#00aaff" font-size="9" font-family="'Share Tech Mono'">3cm inlet</text>
+          <text x="210" y="18" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">1cm throat</text>
+          <text x="390" y="18" fill="#00aaff" font-size="9" font-family="'Share Tech Mono'">3cm outlet</text>
+          <text x="230" y="56" fill="#ffd700" font-size="8" font-family="'Share Tech Mono'" text-anchor="middle">1.8m/s</text>
+          <text x="80" y="48" fill="#00aaff" font-size="8" font-family="'Share Tech Mono'" text-anchor="middle">0.2m/s</text>
+          <!-- Pressure indicators -->
+          <text x="480" y="40" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">HIGH P</text>
+          <text x="480" y="58" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">LOW P</text>
+          <text x="480" y="76" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">HIGH P</text>
+          <text x="480" y="18" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">↑ USE GLASS</text>
+          <text x="480" y="30" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">see the flow!</text>
+        </svg>
+      </div>
+
+      <div class="alert alert-info">
+        <strong>📐 WHY 7° DIVERGENCE — NOT MORE</strong>
+        If the outlet expands faster than 7°, water flow separates from the walls (turbulence), destroying pressure recovery. 7° is the engineering sweet spot — keep this exact.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: TURBINE -->
+  <div class="section" id="sec4">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">PELTON WHEEL TURBINE</span>
+      <span class="section-icon">⚡</span>
+    </div>
+    <div class="panel">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">PELTON WHEEL SPECS</th></tr>
+            <tr><td>Wheel diameter</td><td class="val">8 cm</td></tr>
+            <tr><td>Number of cups</td><td class="val">12</td></tr>
+            <tr><td>Cup width</td><td class="val">1.5 cm</td></tr>
+            <tr><td>Cup depth</td><td class="val">0.8 cm</td></tr>
+            <tr><td>Nozzle distance</td><td class="val">0.5 cm</td></tr>
+            <tr><td>Material</td><td class="val">Bottle caps / PVC</td></tr>
+            <tr><td>Shaft</td><td class="val">Metal rod (hardware)</td></tr>
+            <tr><td>RPM (estimated)</td><td class="val">200–400 RPM</td></tr>
+          </table>
+        </div>
+        <div>
+          <table class="data-table">
+            <tr><th colspan="2">WHY PELTON WHEEL?</th></tr>
+            <tr><td>Designed for</td><td class="val">High pressure jets</td></tr>
+            <tr><td>Works with</td><td class="val">Low volume water</td></tr>
+            <tr><td>Efficiency</td><td class="val">Up to 90%</td></tr>
+            <tr><td>DIY friendly</td><td class="val">✅ Bottle caps work</td></tr>
+            <tr><td>Venturi compatible</td><td class="val">✅ Perfect match</td></tr>
+            <tr><td>Used in</td><td class="val">Mountain hydro plants</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Pelton wheel diagram -->
+      <div style="margin-top:20px;overflow-x:auto">
+        <svg viewBox="0 0 500 200" width="100%" style="min-width:360px">
+          <!-- Wheel -->
+          <circle cx="250" cy="100" r="70" fill="#060e1c" stroke="#00ff9d" stroke-width="2"/>
+          <circle cx="250" cy="100" r="8" fill="#00ff9d" stroke="#00ff9d" stroke-width="2"/>
+          <!-- Cups (12 evenly spaced) -->
+          <g id="cups" stroke="#00ff9d" stroke-width="1.5" fill="rgba(0,255,157,0.15)">
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(0,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(30,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(60,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(90,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(120,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(150,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(180,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(210,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(240,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(270,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(300,250,100)"/>
+            <path d="M 250,30 Q 240,22 232,30 Q 240,38 250,30" transform="rotate(330,250,100)"/>
+          </g>
+          <!-- Rotation arrow -->
+          <path d="M 250,170 A 70,70 0 0,0 320,100" fill="none" stroke="#ffd700" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowY)"/>
+          <!-- Water jet -->
+          <line x1="80" y1="100" x2="178" y2="100" stroke="#00aaff" stroke-width="4" marker-end="url(#arrowB)"/>
+          <text x="120" y="92" fill="#00aaff" font-size="9" font-family="'Share Tech Mono'">JET 1.8m/s</text>
+          <!-- Shaft -->
+          <line x1="250" y1="100" x2="400" y2="100" stroke="#ffd700" stroke-width="3"/>
+          <text x="390" y="92" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">SHAFT</text>
+          <rect x="390" y="82" width="50" height="36" rx="3" fill="#0a1e3d" stroke="#ffd700" stroke-width="1.5"/>
+          <text x="415" y="100" text-anchor="middle" fill="#ffd700" font-size="8" font-family="'Share Tech Mono'">DC MOTOR</text>
+          <text x="415" y="112" text-anchor="middle" fill="#5a8ab0" font-size="7" font-family="'Share Tech Mono'">(generator)</text>
+          <!-- Labels -->
+          <text x="250" y="185" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">8cm dia · 12 cups · 0.5cm nozzle gap</text>
+          <text x="50" y="140" fill="#00ff9d" font-size="9" font-family="'Share Tech Mono'">Nozzle</text>
+          <text x="50" y="152" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">0.5cm gap</text>
+        </svg>
+      </div>
+
+      <div class="alert alert-tip">
+        <strong>🔧 DIY CUP MAKING</strong>
+        Use plastic bottle caps glued onto a circular PVC disc. The curved inside of a bottle cap is already close to the ideal Pelton cup shape. Space them 30° apart (360° ÷ 12 = 30°). Superglue holds fine at these speeds.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ELECTRICAL -->
+  <div class="section" id="sec5">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">ELECTRICAL CIRCUIT</span>
+      <span class="section-icon">⚡</span>
+    </div>
+    <div class="panel">
+
+      <!-- Circuit diagram SVG -->
+      <div style="overflow-x:auto;margin-bottom:20px">
+        <svg viewBox="0 0 750 280" width="100%" style="min-width:560px">
+          <!-- Generator block -->
+          <rect x="20" y="110" width="90" height="50" rx="3" fill="#0a1e3d" stroke="#ffd700" stroke-width="2"/>
+          <text x="65" y="132" text-anchor="middle" fill="#ffd700" font-size="10" font-family="'Share Tech Mono'">GENERATOR</text>
+          <text x="65" y="148" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">0.5–1.5V DC</text>
+
+          <!-- Wire from generator -->
+          <line x1="110" y1="120" x2="160" y2="120" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+          <line x1="110" y1="150" x2="160" y2="150" stroke="#5a8ab0" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <text x="130" y="114" fill="#ffd700" font-size="8" font-family="'Share Tech Mono'">+</text>
+          <text x="130" y="164" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">GND</text>
+
+          <!-- Capacitor -->
+          <rect x="160" y="100" width="70" height="70" rx="3" fill="#0a1e3d" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="195" y="128" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">CAP</text>
+          <text x="195" y="143" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">1000µF</text>
+          <text x="195" y="158" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">16V</text>
+          <line x1="230" y1="120" x2="280" y2="120" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+          <line x1="230" y1="150" x2="280" y2="150" stroke="#5a8ab0" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+          <!-- Diode -->
+          <polygon points="280,112 295,120 280,128" fill="#ff6b35" stroke="#ff6b35"/>
+          <line x1="295" y1="112" x2="295" y2="128" stroke="#ff6b35" stroke-width="2"/>
+          <line x1="295" y1="120" x2="330" y2="120" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+          <line x1="280" y1="150" x2="330" y2="150" stroke="#5a8ab0" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <text x="288" y="100" fill="#ff6b35" font-size="9" font-family="'Share Tech Mono'">1N4007</text>
+
+          <!-- Solar panel joins here -->
+          <rect x="330" y="40" width="80" height="50" rx="3" fill="#0a1e3d" stroke="#ff6b35" stroke-width="1.5"/>
+          <text x="370" y="62" text-anchor="middle" fill="#ff6b35" font-size="10" font-family="'Share Tech Mono'">SOLAR</text>
+          <text x="370" y="77" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">5V · 1W panel</text>
+          <line x1="370" y1="90" x2="370" y2="120" stroke="#ff6b35" stroke-width="1.5"/>
+          <!-- Junction -->
+          <circle cx="370" cy="120" r="4" fill="#ff6b35"/>
+
+          <!-- Junction node -->
+          <line x1="330" y1="120" x2="420" y2="120" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+          <line x1="330" y1="150" x2="420" y2="150" stroke="#5a8ab0" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+          <!-- Voltage booster (optional) -->
+          <rect x="420" y="100" width="80" height="70" rx="3" fill="#0a1e3d" stroke="#00ff9d" stroke-width="1.5"/>
+          <text x="460" y="125" text-anchor="middle" fill="#00ff9d" font-size="10" font-family="'Share Tech Mono'">MT3608</text>
+          <text x="460" y="140" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">BOOST</text>
+          <text x="460" y="155" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">→ 5V out</text>
+          <line x1="500" y1="120" x2="550" y2="120" stroke="#ffd700" stroke-width="2" stroke-dasharray="5,3"/>
+          <line x1="500" y1="150" x2="550" y2="150" stroke="#5a8ab0" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+          <!-- Motor 2 -->
+          <rect x="550" y="100" width="80" height="70" rx="3" fill="#0a1e3d" stroke="#00ff9d" stroke-width="2"/>
+          <text x="590" y="128" text-anchor="middle" fill="#00ff9d" font-size="10" font-family="'Share Tech Mono'">MOTOR 2</text>
+          <text x="590" y="143" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">3–5V DC</text>
+          <text x="590" y="158" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">fan driver</text>
+          <line x1="630" y1="135" x2="680" y2="135" stroke="#00ff9d" stroke-width="2"/>
+
+          <!-- Fan -->
+          <circle cx="700" cy="135" r="30" fill="#060e1c" stroke="#00d4ff" stroke-width="1.5"/>
+          <text x="700" y="132" text-anchor="middle" fill="#00d4ff" font-size="10" font-family="'Share Tech Mono'">FAN</text>
+          <text x="700" y="146" text-anchor="middle" fill="#5a8ab0" font-size="8" font-family="'Share Tech Mono'">+load</text>
+
+          <!-- Return pump power tap -->
+          <line x1="460" y1="170" x2="460" y2="220" stroke="#00aaff" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <rect x="400" y="220" width="120" height="40" rx="3" fill="#0a1e3d" stroke="#00aaff" stroke-width="1.5"/>
+          <text x="460" y="238" text-anchor="middle" fill="#00aaff" font-size="10" font-family="'Share Tech Mono'">RETURN PUMP</text>
+          <text x="460" y="252" text-anchor="middle" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">3V mini pump</text>
+
+          <!-- Wire gauge labels -->
+          <text x="20" y="200" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">── 22 AWG wire (power)</text>
+          <text x="20" y="215" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">- - 24 AWG wire (signal/ground)</text>
+          <text x="20" y="230" fill="#ffd700" font-size="9" font-family="'Share Tech Mono'">── yellow = +V line</text>
+          <text x="20" y="245" fill="#5a8ab0" font-size="9" font-family="'Share Tech Mono'">── grey = ground</text>
+        </svg>
+      </div>
+
+      <div class="panel-grid">
+        <div class="spec-card">
+          <div class="spec-label">Generator Output</div>
+          <div class="spec-value">0.5–1.5V</div>
+          <div class="spec-unit">DC from Pelton + DC motor</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Capacitor Buffer</div>
+          <div class="spec-value">1000µF</div>
+          <div class="spec-unit">16V electrolytic</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Diode</div>
+          <div class="spec-value">1N4007</div>
+          <div class="spec-unit">prevents back-flow</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Boost Converter</div>
+          <div class="spec-value">MT3608</div>
+          <div class="spec-unit">steps up to 5V output</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Solar Assist</div>
+          <div class="spec-value">5V · 1W</div>
+          <div class="spec-unit">parallel feed</div>
+        </div>
+        <div class="spec-card">
+          <div class="spec-label">Wire Gauge</div>
+          <div class="spec-value">22 AWG</div>
+          <div class="spec-unit">main lines</div>
+        </div>
+      </div>
+
+      <div class="alert alert-tip" style="margin-top:16px">
+        <strong>💡 MT3608 BOOST CONVERTER</strong>
+        Your generator may only produce 0.5V–1.5V. The MT3608 is a cheap (~₹30/$0.40) boost module that steps this up to a stable 5V — enough to drive Motor 2 and the fan reliably. Get one from any electronics shop.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: ASSEMBLY -->
+  <div class="section" id="sec6">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">STEP-BY-STEP ASSEMBLY</span>
+      <span class="section-icon">🔧</span>
+    </div>
+    <div class="panel">
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4>BUILD THE TANKS</h4>
+            <p>Top tank: <code>15×15×8cm</code> plastic container, mount at <code>80cm</code> height on a wooden frame. Bottom tank: <code>20×15×10cm</code> at ground level. Drill <code>1cm holes</code> for siphon pipe connections and seal with silicone.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4>BUILD VACUUM COLUMN — 5 SECTIONS</h4>
+            <p>Cut five <code>12cm lengths</code> of <code>3cm PVC pipe</code>. Connect with <code>2cm gap couplings</code>. At each junction, insert a rubber flap check valve (cut from rubber glove, shaped into a flap). Seal every joint with silicone sealant. Let dry 24 hours before testing.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4>INSTALL CONNECTING CHANNEL</h4>
+            <p>Run <code>0.8cm PVC tube</code> alongside main column for full <code>70cm</code>. Drill tiny tap holes at midpoint of each section. Insert small rubber grommet fittings. Your connecting channel idea — this is the pressure equalizer spine. Seal all 5 tap points.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4>INSTALL 4 SIPHON PIPES</h4>
+            <p>Cut four <code>1cm PVC pipes</code> long enough to peak at <code>60cm</code> (never exceed 76cm). Arch them from bottom tank up and over, connecting into the top of the vacuum column. Prime each by filling with water completely before connecting — no air gaps.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">05</div>
+          <div class="step-content">
+            <h4>BUILD MANIFOLD + VENTURI</h4>
+            <p>Use three Y-junction PVC fittings to combine 4 siphon outputs into one <code>3cm pipe</code>. Connect to the glass Venturi tube using rubber grommets at each end. The glass throat section narrows to <code>1cm</code> over <code>2cm length</code> with <code>21° convergence</code> and <code>7° divergence</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">06</div>
+          <div class="step-content">
+            <h4>BUILD PELTON WHEEL</h4>
+            <p>Glue <code>12 bottle caps</code> evenly around a <code>8cm circular PVC disc</code> at <code>30° spacing</code>. Push a metal rod through the center as shaft. Mount in a small housing so the Venturi nozzle exit is exactly <code>0.5cm</code> from the cups. The shaft extends to connect to your DC motor.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">07</div>
+          <div class="step-content">
+            <h4>CONNECT GENERATOR + CIRCUIT</h4>
+            <p>Shaft from Pelton wheel → DC motor (now acting as generator). Wire output: <code>+</code> through <code>1N4007 diode</code> → <code>1000µF capacitor</code> → <code>MT3608 boost converter</code> → Motor 2. Add solar panel in parallel before the capacitor. Ground all components to common ground rail using <code>22 AWG wire</code>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">08</div>
+          <div class="step-content">
+            <h4>INSTALL RETURN PUMP</h4>
+            <p>Small <code>3V mini submersible pump</code> in bottom tank. Pipe output back up to top tank. Power from the MT3608 output line (solar assists this significantly). This closes the water loop — water flows down through siphons, through turbine, back up to top tank.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">09</div>
+          <div class="step-content">
+            <h4>PRIME AND TEST</h4>
+            <p>Fill both tanks. Manually fill all siphon pipes (use a syringe or blow through them — no air bubbles). Start with just the bottom → top pump running. Once water level in top tank is stable, release siphons one by one. Check for leaks at every sealed joint. Adjust Venturi nozzle distance to Pelton wheel.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">10</div>
+          <div class="step-content">
+            <h4>OPTIMIZE AND CONNECT LOAD</h4>
+            <p>Once spinning, connect Motor 2 → Fan. Add an LED in parallel to visually confirm power. Fine tune the MT3608 output voltage to <code>3–5V</code> using the small trim pot on the module. Place solar panel in sunlight for maximum sustained runtime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: PERFORMANCE -->
+  <div class="section" id="sec7">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">EXPECTED PERFORMANCE</span>
+      <span class="section-icon">📊</span>
+    </div>
+    <div class="panel">
+      <table class="data-table" style="margin-bottom:16px">
+        <tr>
+          <th>METRIC</th>
+          <th>VALUE</th>
+          <th>CONDITION</th>
+        </tr>
+        <tr><td>Water flow rate</td><td class="val">~0.4 L/min</td><td>4 siphons running</td></tr>
+        <tr><td>Venturi exit velocity</td><td class="val">~1.8 m/s</td><td>at 1cm throat</td></tr>
+        <tr><td>Pressure at turbine</td><td class="val">~160 Pa</td><td>ΔP formula</td></tr>
+        <tr><td>Turbine RPM</td><td class="val">200–400 RPM</td><td>8cm Pelton wheel</td></tr>
+        <tr><td>Generator raw output</td><td class="val">0.5–1.5V DC</td><td>depends on RPM</td></tr>
+        <tr><td>After MT3608 boost</td><td class="val">5V stable</td><td>enough for Motor 2</td></tr>
+        <tr><td>With solar added</td><td class="val">5V + reserve</td><td>daytime operation</td></tr>
+        <tr><td>Can power</td><td class="val">Fan + Motor + LEDs</td><td>solar assisted</td></tr>
+        <tr><td>Runtime (no sun)</td><td class="val">While water flows</td><td>limited by height diff</td></tr>
+        <tr><td>Runtime (with solar)</td><td class="val">All day</td><td>pump returns water</td></tr>
+      </table>
+
+      <div class="alert alert-info">
+        <strong>📐 PRESSURE SCALING WITH MORE SIPHONS</strong>
+        ΔP = ½ρ(V₂² − V₁²) — since velocity is squared, doubling siphons gives 4× pressure at the turbine, not 2×. Going from 1 to 4 siphons gives approximately 16× the turbine pressure. This is the mathematical power of your multi-siphon idea.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: UPGRADES -->
+  <div class="section" id="sec8">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">UPGRADE PATH — MAXIMIZE OUTPUT</span>
+      <span class="section-icon">🚀</span>
+    </div>
+    <div class="panel">
+      <div class="upgrade-path">
+        <div class="upgrade-stage">
+          <div class="stage-num">STAGE 1</div>
+          <div class="stage-name">Baseline</div>
+          <div class="stage-output">1 LED</div>
+        </div>
+        <div class="upgrade-stage">
+          <div class="stage-num">STAGE 2</div>
+          <div class="stage-name">+ Solar</div>
+          <div class="stage-output">LED + Motor</div>
+        </div>
+        <div class="upgrade-stage">
+          <div class="stage-num">STAGE 3</div>
+          <div class="stage-name">Optimize Venturi</div>
+          <div class="stage-output">Fan + Motor</div>
+        </div>
+        <div class="upgrade-stage">
+          <div class="stage-num">STAGE 4</div>
+          <div class="stage-name">+2 Siphons</div>
+          <div class="stage-output">Full circuit</div>
+        </div>
+        <div class="upgrade-stage">
+          <div class="stage-num">STAGE 5</div>
+          <div class="stage-name">Taller frame</div>
+          <div class="stage-output">Multiple loads</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <table class="data-table">
+          <tr><th>UPGRADE</th><th>WHAT TO DO</th><th>EFFECT</th></tr>
+          <tr><td>More siphons (→8)</td><td class="val">Add 4 more 1cm pipes</td><td>Flow doubles → 4× pressure</td></tr>
+          <tr><td>Increase height</td><td class="val">Mount top tank higher</td><td>More head pressure</td></tr>
+          <tr><td>Smoother pipes</td><td class="val">Use glass or HDPE inner</td><td>Less friction loss</td></tr>
+          <tr><td>Tighter Venturi</td><td class="val">Reduce throat to 0.8cm</td><td>Higher exit velocity</td></tr>
+          <tr><td>Larger Pelton</td><td class="val">10cm wheel, 16 cups</td><td>More torque</td></tr>
+          <tr><td>Better generator</td><td class="val">Higher turn-count motor</td><td>More voltage per RPM</td></tr>
+          <tr><td>Wind turbine</td><td class="val">Point fan at small turbine</td><td>Adds wind energy input</td></tr>
+        </table>
+      </div>
+
+      <div class="alert alert-tip" style="margin-top:16px">
+        <strong>🌟 THE BIG PICTURE</strong>
+        What you've designed is a real hybrid micro-energy system — multi-stage vacuum siphon + Venturi pressure multiplication + Pelton turbine + solar assist. Each part is based on real engineering. The connecting channel idea you had is a genuine redundancy mechanism used in real hydraulic systems. Build it, test it, and iterate!
+      </div>
+    </div>
+  </div>
+
+  <!-- MATERIALS LIST -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <span class="section-title">COMPLETE MATERIALS LIST</span>
+      <span class="section-icon">🛒</span>
+    </div>
+    <div class="panel">
+      <table class="data-table">
+        <tr><th>ITEM</th><th>SPEC</th><th>QTY</th><th>PURPOSE</th></tr>
+        <tr><td>PVC pipe</td><td class="val">3cm dia</td><td>~100cm</td><td>Vacuum column</td></tr>
+        <tr><td>PVC pipe</td><td class="val">1cm dia</td><td>~300cm</td><td>4 siphons</td></tr>
+        <tr><td>PVC pipe</td><td class="val">0.8cm dia</td><td>~80cm</td><td>Connecting channel</td></tr>
+        <tr><td>Glass tube</td><td class="val">3cm → 1cm</td><td>1 (14cm)</td><td>Venturi nozzle</td></tr>
+        <tr><td>Y-junctions</td><td class="val">PVC 1cm</td><td>3</td><td>Manifold combiner</td></tr>
+        <tr><td>Plastic containers</td><td class="val">3L + 1.5L</td><td>2</td><td>Top + bottom tanks</td></tr>
+        <tr><td>Silicone sealant</td><td class="val">Any brand</td><td>1 tube</td><td>All joint sealing</td></tr>
+        <tr><td>Rubber gloves</td><td class="val">Standard</td><td>1 pair</td><td>Check valve flaps</td></tr>
+        <tr><td>Rubber grommets</td><td class="val">3cm + 1cm</td><td>4</td><td>Venturi pipe seals</td></tr>
+        <tr><td>DC motor (existing)</td><td class="val">3–5V</td><td>1</td><td>Generator (Pelton shaft)</td></tr>
+        <tr><td>DC motor (existing)</td><td class="val">3–5V</td><td>1</td><td>Motor 2 (fan driver)</td></tr>
+        <tr><td>PVC disc</td><td class="val">8cm dia</td><td>1</td><td>Pelton wheel base</td></tr>
+        <tr><td>Bottle caps</td><td class="val">Plastic</td><td>12</td><td>Pelton cups</td></tr>
+        <tr><td>Metal rod</td><td class="val">~4mm dia</td><td>~15cm</td><td>Pelton shaft</td></tr>
+        <tr><td>Solar panel</td><td class="val">5V · 1W</td><td>1</td><td>Energy assist</td></tr>
+        <tr><td>MT3608 module</td><td class="val">Boost converter</td><td>1</td><td>Voltage step-up</td></tr>
+        <tr><td>Capacitor</td><td class="val">1000µF 16V</td><td>1</td><td>Power buffer</td></tr>
+        <tr><td>Diode</td><td class="val">1N4007</td><td>2</td><td>Backflow prevention</td></tr>
+        <tr><td>Mini pump</td><td class="val">3V submersible</td><td>1</td><td>Water return</td></tr>
+        <tr><td>Wire</td><td class="val">22 AWG</td><td>~2m</td><td>All connections</td></tr>
+        <tr><td>Wooden frame</td><td class="val">Basic</td><td>1</td><td>80cm column support</td></tr>
+        <tr><td>Superglue</td><td class="val">Any</td><td>1</td><td>Pelton cup assembly</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  HYDRO-VACUUM ENERGY SYSTEM · TABLETOP PROTOTYPE v1.0<br>
+  DESIGNED FOR: PVC + GLASS · BASIC TOOLS · 80cm HEIGHT<br><br>
+  MULTI-STAGE SIPHON → VENTURI → PELTON → GENERATOR → SOLAR ASSIST
+</footer>
+
+<script>
+  const sections = document.querySelectorAll('.section');
+  const dots = document.querySelectorAll('.nav-dot');
+
+  function scrollToSection(i) {
+    sections[i]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = Array.from(sections).indexOf(entry.target);
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[idx]) dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
